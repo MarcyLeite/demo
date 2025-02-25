@@ -1,0 +1,42 @@
+name: CI
+
+on:
+  workflow_call:
+  push:
+    branches:
+      - develop
+  pull_request:
+    branches:
+      - develop
+jobs:
+  lint:
+    name: Lint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: ./.github/actions/setup
+      - name: Run Checkstyle on main sources
+        run: ./gradlew checkstyleMain
+
+      - name: Run Checkstyle on test sources
+        run: ./gradlew checkstyleTest
+
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+      - uses: ./.github/actions/setup
+      - name: Run Build
+        run: ./gradlew bootJar
+
+  test:
+    name: Test
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+      - uses: ./.github/actions/setup
+      - name: Run tests
+        run: ./gradlew test
